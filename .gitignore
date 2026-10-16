@@ -1,0 +1,69 @@
+# Gradle
+.gradle/
+.gradle-home/
+build/
+out/
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Fabric Loom
+.loom/
+run/
+backup/
+.analysis/
+!.analysis/build-local-mirror.ps1
+!.analysis/fetch-missing-deps.ps1
+
+# Local dependency mirror (fabricmc.net 拉不到时的离线缓存, 不该进仓库)
+local-maven/
+
+# Minecraft runtime artifacts
+minecraft-*.jar
+*merged*.jar
+
+# 本地 jar 产物
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# 运行时持久化文件 —— 可能含用户 API Key, 绝对不能提交
+run/config/hanhua*.json
+run/*.json
+config/
+
+# 测试模组自身的构建产物
+testmod/.gradle/
+testmod/build/
+
+# 真机截图 / GUI 自动测试产物
+.mc-gui/
+
+# 开发环境变量脚本(含本地 JAVA_HOME 路径)
+gradle-env.ps1
+
+# 开发过程文档(设计/计划/临时笔记, 非交付)
+NOTES.md
+PLAN.md
+MC_MOD_DEV_GUIDE.md
+测试-*.md
+*测试*.md
+修复方案-*.md
+
+# 日志 / 临时输出
+logs/
+*.log
+run-client-test.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# 系统临时文件
+*.tmp
+*.bak

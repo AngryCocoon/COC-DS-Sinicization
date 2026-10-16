@@ -1,0 +1,102 @@
+plugins {
+	// 26.2 为 unobfuscated 版本：必须用 net.fabricmc.fabric-loom 插件 id(旧 fabric-loom 会要求 mappings)
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+}
+
+repositories {
+	// 本地镜像(网络兜底): maven.fabricmc.net 等远端偶发长时间卡死时, 用 .analysis/fetch-missing-deps.ps1
+	// 预先把缺失依赖 curl 到 local-maven/, 这里把它排在所有仓库最前面。
+	def mirrorDir = file('local-maven')
+	if (mirrorDir.isDirectory()) {
+		def mirror = maven {
+			name = 'LocalMirror'
+			url = mirrorDir.toURI()
+		}
+		try {
+			repositories.remove(mirror)
+			repositories.add(0, mirror)
+			logger.lifecycle("Using local dependency mirror: {}", mirrorDir)
+		} catch (Throwable t) {
+			logger.warn("Could not prioritise local dependency mirror: {}", t.toString())
+		}
+	}
+	// Loom 自带 Minecraft/Fabric 必要仓库;此处仅补充运行/编译前置的第三方模组仓库
+	// 阿里云 Maven Central 镜像: 国内拉 LWJGL/netty 等 Minecraft 运行期库比官方源快很多
+	maven {
+		name = 'AliyunCentral'
+		url = 'https://maven.aliyun.com/repository/public'
+	}
+	maven {
+		name = 'Shedaniel'
+		url = 'https://maven.shedaniel.me/'
+	}
+	maven {
+		name = 'TerraformersMC'
+		url = 'https://maven.terraformersmc.com/releases/'
+	}
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	// 26.2 起 Mojang 分发 unobfuscated(已命名) jar：无需 mappings 行(官方模板同款)
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API (unobfuscated 工程无需 modImplementation/remap,官方模板用 implementation)
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// 配置/设置界面前置(unobfuscated 工程用 implementation 即可)
+	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": inputs.properties.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	// 源码含中文字面量: 显式 UTF-8, 避免平台默认编码导致乱码
+	it.options.encoding = 'UTF-8'
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+// Artifact naming rule: <ModName>-<gameVersion>-<loader><loaderVersion>-<version>.jar
+// (composed here, because Gradle does not expand ${...} inside a gradle.properties value).
+def archiveBase = "${project.mod_name}-${project.minecraft_version}-${project.mod_loader}${project.mod_loader_version}"
+
+base {
+	archivesName = archiveBase
+}
+
+jar {
+	inputs.property "archivesName", archiveBase
+
+	from("LICENSE") {
+		rename { "${it}_${inputs.properties.archivesName}" }
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+		// 仅在本机/自建仓库时使用
+	}
+}

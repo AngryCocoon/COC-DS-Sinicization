@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "hanhua",
+	"version": "${version}",
+	"name": "COC DS Sinicization",
+	"description": "功能：简体中文下自动把缺失的翻译键用 DeepSeek 翻成中文，结果会缓存并写成汉化资源包（resourcepacks 里可复用）；进游戏只在检测到新增模组时才请求 API，进度在开始菜单和设置界面实时显示。API 配置技巧：到 platform.deepseek.com 建一个 Key，填进本模组的设置界面（首次进游戏主菜单会自动弹出一次，可跳过）；模型用 deepseek-chat 又快又便宜；Key 只保存在本实例 config/hanhua.json，重装 mod 需要重新填。(客户端 mod)",
+	"authors": [
+		"AngryCocoon/DSH"
+	],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/hanhua/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.hanhua.HanhuaClient"
+		],
+		"modmenu": [
+			"com.hanhua.modmenu.HanhuaModMenu"
+		]
+	},
+	"mixins": [
+		"hanhua.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*",
+		"modmenu": "*",
+		"cloth-config": "*"
+	}
+}

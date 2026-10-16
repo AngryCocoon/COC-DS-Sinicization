@@ -1,0 +1,22 @@
+{
+	"schemaVersion": 1,
+	"id": "hanhua_test",
+	"version": "1.0.0",
+	"name": "Hanhua Test Mod (en_us only)",
+	"description": "验收辅助：注册一个只有英文翻译(无 zh_cn)的物品 Rubber Duck，用于验证自动汉化。",
+	"authors": [
+		"HANHUA"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.hanhua.test.HanhuaTestMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25"
+	}
+}
